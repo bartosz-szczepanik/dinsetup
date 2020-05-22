@@ -11,7 +11,7 @@ from PyQt5.QtGui import QKeySequence, QPixmap
 
 #from dinworker import DinSerialWorker
 from TCP.ConfigTcpDialog import ConfigTcpDialog
-from DinVisual import DinVisual
+from Widgets.DinVisual import DinVisual
 from Serial.configdialog import ConfigDialog
 
 
@@ -31,14 +31,14 @@ class MainWindowLayout(QWidget):
         self.layout().addWidget(self.tabs)
 
         self.imagedict = {
-            "DINDC": QPixmap("images/dinicon/dinicondc.png"),
-            "DINCN": QPixmap("images/dinicon/diniconlive.png"),
-            "DINPIN": QPixmap("images/dinicon/diniconpin.png"),
-            "DINFW": QPixmap("images/dinicon/diniconfw.png"),
-            "DINFIN": QPixmap("images/dinicon/dinicondone.png")
+            "DINDC": QPixmap("resources/images/dinicon/dinicondc.png"),
+            "DINCN": QPixmap("resources/images/dinicon/diniconlive.png"),
+            "DINPIN": QPixmap("resources/images/dinicon/diniconpin.png"),
+            "DINFW": QPixmap("resources/images/dinicon/diniconfw.png"),
+            "DINFIN": QPixmap("resources/images/dinicon/dinicondone.png")
         }
 
-    def updateamount(self, selected, pincsvfile, fw2data, fw3data):#, pincsvfile, fwv2datafile, fwv3datafile, fwv2filename, fwv3filename):
+    def updateamount(self, selected, pincsvfile, fw2data, fw3data, configdata):#, pincsvfile, fwv2datafile, fwv3datafile, fwv2filename, fwv3filename):
         filelock = Lock()
         try:
             f = open("pgecodeiccidpin.txt","r")
@@ -51,7 +51,7 @@ class MainWindowLayout(QWidget):
         amount = len(selected)
         for number in range(0, amount):
             usbport = selected[number].split(" ")[1]
-            test = DinVisual(self.imagedict, usbport, filelock, pincsvfile, fw2data, fw3data)
+            test = DinVisual(self.imagedict, usbport, filelock, pincsvfile, fw2data, fw3data, configdata)
             self.serialtab.layout().addWidget(test, floor(number/4), number%4)
             self.serialtab.update()
         self.update()
@@ -94,7 +94,7 @@ class App(QMainWindow):
 
         self.mainwindow = MainWindowLayout()
         self.setCentralWidget(self.mainwindow)
-        self.setStyleSheet(open("stylesheet.css").read())
+        self.setStyleSheet(open("resources/stylesheet.css").read())
 
 
         self.show()
@@ -103,7 +103,7 @@ class App(QMainWindow):
             dialog = ConfigDialog()
             if dialog.exec_():
                 if len(dialog.result):
-                    self.mainwindow.updateamount(dialog.result, dialog.pincsvfile, dialog.fwv2datafile, dialog.fwv3datafile)
+                    self.mainwindow.updateamount(dialog.result, dialog.pincsvfile, dialog.fwv2datafile, dialog.fwv3datafile, dialog.configdata)
                     self.update()
             else:
                 pass
@@ -119,7 +119,6 @@ class App(QMainWindow):
 
 if __name__ == '__main__':
     sys._excepthook = sys.excepthook
-
 
     def exception_hook(exctype, value, traceback):
         sys._excepthook(exctype, value, traceback)

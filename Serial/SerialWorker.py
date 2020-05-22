@@ -25,7 +25,7 @@ class SerialWorker(QObject):
     progressupdatesig = pyqtSignal(int)
     imagechangesig = pyqtSignal(str)
 
-    def __init__(self, usbport, filelock, iccidpinfile=None, fw2data=None, fw3data=None):
+    def __init__(self, usbport, filelock, iccidpinfile=None, fw2data=None, fw3data=None, configdata = None):
         super().__init__()
         self.lock = Lock()
         self.filelock = filelock
@@ -37,6 +37,7 @@ class SerialWorker(QObject):
         self.iccidpinfile = iccidpinfile
         self.fw2data = fw2data
         self.fw3data = fw3data
+        self.configdata = configdata
 
         self.sn = ""
         self.version = ""
@@ -80,9 +81,9 @@ class SerialWorker(QObject):
                 with self.connection:
                     self.imagechangesig.emit("DINCN")
                     self.__getDataFromDin()
+                #   self.__getConfig()
                     self.__setPin()
                     self.__updateFw()
-
                 QApplication.processEvents()
                 self.resetVisual()
             except Exception as e:
@@ -174,8 +175,7 @@ class SerialWorker(QObject):
 
     def __setPin(self):
         self.imagechangesig.emit("DINPIN")
-        with open("../PGEDefaultConfig.bin", "rb") as f:
-            config = bytearray(f.read())
+        config = bytearray(self.configdata)
         self.__getIccid()
         self.__findPin()
         if self.pin:
@@ -231,6 +231,12 @@ class SerialWorker(QObject):
         ret = None
         while not ret:
             ret = self.__sendAndWait(Commands.CMD_CONFIG, config, True)
+
+    def __getConfig(self):
+        ret = None
+        while not ret:
+            ret = self.__sendAndWait(Commands.CMD_CONFIG, b"?", True)
+        open("RzeszowConfig.bin","wb").write(ret[2])
 
     def __setAtPin(self, retries=0):
         retries = retries

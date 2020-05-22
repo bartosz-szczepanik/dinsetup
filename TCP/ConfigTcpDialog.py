@@ -8,7 +8,7 @@ class ConfigTcpDialog(QDialog):
 
     def __init__(self, *args, **kwargs):
         super(ConfigTcpDialog, self).__init__(*args, **kwargs)
-        self.setStyleSheet(open("../stylesheet.css").read())
+        self.setStyleSheet(open("../resources/stylesheet.css").read())
         self.setWindowTitle("ConfigTcp")
         self.result = []
         self.pincsvfile = None
@@ -33,7 +33,7 @@ class ConfigTcpDialog(QDialog):
         self.fwv3bttn.clicked.connect(self.fwV3Dialog)
 
         self.refreshbutton = QPushButton()
-        self.refreshbutton.setIcon(QIcon("../images/icons/refreshicon.png"))
+        self.refreshbutton.setIcon(QIcon("../resources/images/icons/refreshicon.png"))
         self.refreshbutton.clicked.connect(self.populateList)
 
         self.layout = QGridLayout()

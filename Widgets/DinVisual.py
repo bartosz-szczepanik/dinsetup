@@ -1,6 +1,5 @@
 from PyQt5.QtCore import QThread, pyqtSlot, Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QGridLayout, QProgressBar, QSizePolicy
-
 from Serial.SerialWorker import SerialWorker
 
 
