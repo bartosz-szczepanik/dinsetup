@@ -5,13 +5,13 @@ from Serial.SerialWorker import SerialWorker
 
 class DinVisual(QWidget):
 
-    def __init__(self, imagedict, usbport=None, filelock=None, iccidpinfile=None, fw2data=None, fw3data=None):
+    def __init__(self, imagedict, usbport=None, filelock=None, iccidpinfile=None, fw2data=None, fw3data=None, configdata = None):
         super().__init__()
         self.setMinimumSize(300, 400)
         self.imagedict = imagedict
 
         self.setupWidget()
-        self.worker = SerialWorker(usbport, filelock, iccidpinfile, fw2data, fw3data)
+        self.worker = SerialWorker(usbport, filelock, iccidpinfile, fw2data, fw3data, configdata)
         self.thread = QThread()
 
         self.worker.moveToThread(self.thread)

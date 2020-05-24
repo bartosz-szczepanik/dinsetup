@@ -41,9 +41,9 @@ class MainWindowLayout(QWidget):
     def updateamount(self, selected, pincsvfile, fw2data, fw3data, configdata):#, pincsvfile, fwv2datafile, fwv3datafile, fwv2filename, fwv3filename):
         filelock = Lock()
         try:
-            f = open("pgecodeiccidpin.txt","r")
+            f = open("karton_piatek_38sztuk.txt", "r")
         except:
-            f = open("pgecodeiccidpin.txt", "w")
+            f = open("karton_piatek_38sztuk.txt", "w")
         f.close()
         for i in reversed(range(self.serialtab.layout().count())):
             #self.serialtab.layout().itemAt(i).widget().close()

@@ -58,6 +58,11 @@ class SerialWorker(QObject):
 
         #self.sig_msg = pyqtSignal(str)
     def resetVisual(self):
+        self.pinset = False
+        self.sn = ""
+        self.version = ""
+        self.pin = ""
+        self.iccid = ""
         self.labelchangesig.emit("AUTH", "")
         self.labelchangesig.emit("SN", "SN: ")
         self.labelchangesig.emit("ICCID", "ICCID: ")
@@ -120,6 +125,7 @@ class SerialWorker(QObject):
         if status == 0:
             self.labelchangesig.emit("AUTH", "AUTHENTICATION OK")
         else:
+            self.__sendAuthentication(b"")
             self.labelchangesig.emit("AUTH", "AUTHENTICATION FAILED")
 
     def __buildPgeCode(self):
@@ -181,7 +187,7 @@ class SerialWorker(QObject):
         if self.pin:
             duplicate = False
             with self.filelock:
-                f = open("../pgecodeiccidpin.txt", "a+")
+                f = open("karton_piatek_38sztuk.txt", "a+")
                 f.seek(0)
                 tmp = f.readlines()
                 content = [x.split(",") for x in tmp]
@@ -304,8 +310,10 @@ class SerialWorker(QObject):
                 self.__writeMemory(0, fwtouse)
                 check = self.__readMemory(0, len(fwtouse))
                 if check == fwtouse:
-                    self.resetDin()
+                    self.__resetDin()
                     break
+                self.labelchangesig("STATUS", "NOT MATCHING")
+                doagain = True
                 retries += 1
         elif self.pinset:
             self.labelchangesig.emit("STATUS", "Updated")
@@ -346,6 +354,11 @@ class SerialWorker(QObject):
             ret_data += ret[2]
             bpcount += 1
         return ret_data
+
+    def __resetDin(self):
+        tmp = 0
+        data = tmp.to_bytes(4, ENDIANNESS)
+        ret = self.__sendAndWait(Commands.CMD_RESTART, data)
 
 
 def getMsgFromPackets(packets: List[Packet]):
